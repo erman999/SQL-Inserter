@@ -1,10 +1,17 @@
 # SQL-Query-Repeater
+The application is written with **Node.js** and **Electron**. It uses `mysql2` package to communicate with SQL server. 
 The typical use case for this repository is to execute SQL queries repetitively within the specified time interval. 
+
+## Dependencies
+```
+electron
+mysql2
+```
 
 ## Installation
 Use `git` and `npm` to install this repository or download repository as zip file, unzip and use `npm` commands to for installation.
 
-```sh
+```
 # Clone this repository
 git clone https://github.com/erman999/SQL-Query-Repeater
 # Go into the repository
