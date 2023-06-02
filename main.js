@@ -2,7 +2,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
-// Prevent garbage collection
+// Make these global
 let mainWindow;
 let lastQuery = '';
 
