@@ -1,6 +1,7 @@
 # SQL-Query-Repeater
-The application is written with **Node.js** and **Electron**. It uses `mysql2` package to communicate with SQL server. 
-The typical use case for this repository is to execute SQL queries repetitively within the specified time interval. 
+The application is written with **Node.js** and **Electron**. It's very fast and stable. 
+Typical use case for this repository is to execute SQL queries repetitively within the specified time interval.
+It's usually needed for repetitive `INSERT` command execution.
 
 ## Dependencies
 ```
