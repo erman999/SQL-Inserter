@@ -17,8 +17,6 @@ window.addEventListener('DOMContentLoaded', async function() {
     password.value = db_config.password;
     database.value = db_config.database;
   }
-  // Check connection on window open
-  checkConnection();
 });
 
 // User save & test action

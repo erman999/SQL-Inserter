@@ -37,6 +37,7 @@ app.whenReady().then(() => {
 
   // Get last query statement and send to renderer
   mainWindow.webContents.once('did-finish-load', async () => {
+
     // Get last query
     const filePath = path.join(__dirname, 'configs', 'last_query.txt');
     const isFileExist = await checkFileExistence(filePath);
@@ -48,17 +49,11 @@ app.whenReady().then(() => {
     }
   });
 
-  // Save last query statement before close
-  mainWindow.on('closed', async function() {
-    const filePath = path.join(__dirname, 'configs', 'last_query.txt');
-    const response = await writeThisFile(filePath, lastQuery);
-    mainWindow = null;
-    app.quit();
-  });
 });
 
 // This is also for macOS behaviour
 app.on('window-all-closed', function () {
+  mainWindow = null;
   if (process.platform !== 'darwin') app.quit();
 });
 
@@ -211,7 +206,13 @@ async function updateConnectionStatus(event, data) {
 
 // Send query to SQL and return results and errors
 async function sendQuery(event, data) {
-  lastQuery = data;
+  // 'before-quit', 'will-quit' and 'quit' listeners don't work for Windows.
+  // Better to save function here to keep feature working
+  if (lastQuery != data || (data.length == 0 && lastQuery.length == 0)) {
+    lastQuery = data;
+    const save = await saveQuery();
+  }
+
   try {
     const [rows, fields] = await promisePool.query(data);
     const result = {rows: rows, fields: fields, err: false};
@@ -219,6 +220,13 @@ async function sendQuery(event, data) {
   } catch (e) {
     return {err: true, response: e};
   }
+}
+
+// Save last query
+async function saveQuery() {
+  const filePath = path.join(__dirname, 'configs', 'last_query.txt');
+  const response = await writeThisFile(filePath, lastQuery);
+  return response;
 }
 
 // (Development only) Simple test function
