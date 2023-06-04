@@ -43,6 +43,12 @@ For repetitive run, check `Repeat` checkbox and enter your time interval. Time i
 ⭐ Application will store last executed query in `configs/last_query.txt` on close and will read and print it to query area on start.
 
 
+## Release
+You can download builded version of the application for Windows.
+
+[Download](https://github.com/erman999/SQL-Query-Repeater/releases)
+
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first
