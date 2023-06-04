@@ -3,6 +3,13 @@ The application is written with **Node.js** and **Electron**. It's very fast and
 Typical use case for this repository is to execute SQL queries repetitively within the specified time interval.
 It's usually needed for repetitive `INSERT` command execution.
 
+</br>
+
+<p align="center"><img src="https://raw.githubusercontent.com/erman999/SQL-Query-Repeater/master/screenshots/video.gif"></p>
+
+</br>
+
+
 ## Dependencies
 ```
 electron
@@ -27,18 +34,20 @@ npm start
 
 Run application and click `cog` icon to configure database connection settings.
 
-![Image-1](https://raw.githubusercontent.com/erman999/SQL-Query-Repeater/master/screenshots/Screenshot-1.jpg)
+<p align="center"><img src="https://raw.githubusercontent.com/erman999/SQL-Query-Repeater/master/screenshots/Screenshot-1.jpg"></p>
 
 Enter database credentials and click `Save & Test` button. 
 If connection is successful you will see `Status` badge will turn to `Connected` status. Otherwise, it will show `Disconnected` and the error message.
 
 ⚠️ **WARNING: Database credentials will NOT be crypted.** It will be stored as plain text in `configs/db_config.json`.
 
-![Image-2](https://raw.githubusercontent.com/erman999/SQL-Query-Repeater/master/screenshots/Screenshot-2.jpg)
+<p align="center"><img src="https://raw.githubusercontent.com/erman999/SQL-Query-Repeater/master/screenshots/Screenshot-2.jpg"></p>
+
 
 For repetitive run, check `Repeat` checkbox and enter your time interval. Time interval values must be `millisecond` (i.e. type 3000 for 3 seconds interval). After execution complete result will be printed.
 
-![Image-3](https://raw.githubusercontent.com/erman999/SQL-Query-Repeater/master/screenshots/Screenshot-3.jpg)
+<p align="center"><img src="https://raw.githubusercontent.com/erman999/SQL-Query-Repeater/master/screenshots/Screenshot-3.jpg"></p>
+
 
 ⭐ Application will store last executed query in `configs/last_query.txt` on close and will read and print it to query area on start.
 
