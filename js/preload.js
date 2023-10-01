@@ -1,15 +1,83 @@
-const {contextBridge, ipcRenderer } = require('electron');
-const os = require('os');
+// Import the necessary Electron components
+const contextBridge = require('electron').contextBridge;
+const ipcRenderer = require('electron').ipcRenderer;
 
-contextBridge.exposeInMainWorld('NodeElectron', {
-  test: (data) => ipcRenderer.invoke('my:test', data),
-  readDatabaseConfig: () => ipcRenderer.invoke('my:readDatabaseConfig'),
-  connectToDatabase: () => ipcRenderer.invoke('my:connectToDatabase'),
-  saveAndTest: (data) => ipcRenderer.invoke('my:saveAndTest', data),
-  openDatabaseSettings: () => ipcRenderer.invoke('my:openDatabaseSettings'),
-  updateConnectionStatus: (data) => ipcRenderer.send('my:updateConnectionStatus', data),
-  connectionStatus: (data) => ipcRenderer.on('my:connectionStatus', data),
-  noConnection: (data) => ipcRenderer.on('my:noConnection', data),
-  sendQuery: (data) => ipcRenderer.invoke('my:sendQuery', data),
-  lastQuery: (data) => ipcRenderer.on('my:lastQuery', data)
-});
+// White-listed channels
+const ipc = {
+  // From render to main
+  'render': {
+    'send': [
+      'channel-1'
+    ],
+    // From main to render
+    'receive': [
+      'channel-2'
+    ],
+    // From render to main and back again
+    'sendReceive': [
+      'channel-3',
+      'channel-4'
+    ]
+  }
+};
+
+// Exposed protected methods in the render process
+contextBridge.exposeInMainWorld(
+  // Allowed 'ipcRenderer' methods
+  'ipcRender', {
+    // From render to main
+    send: (channel, args) => {
+      let validChannels = ipc.render.send;
+      if (validChannels.includes(channel)) {
+        ipcRenderer.send(channel, args);
+      }
+    },
+    // From main to render
+    receive: (channel, listener) => {
+      let validChannels = ipc.render.receive;
+      if (validChannels.includes(channel)) {
+        // Deliberately strip event as it includes `sender`
+        ipcRenderer.on(channel, (event, ...args) => listener(...args));
+      }
+    },
+    // From render to main and back again
+    invoke: (channel, args) => {
+      let validChannels = ipc.render.sendReceive;
+      if (validChannels.includes(channel)) {
+        return ipcRenderer.invoke(channel, args);
+      }
+    }
+  }
+);
+
+/*
+* Render --> Main
+* ---------------
+* Render:  window.ipcRender.send('channel', data); // Data is optional.
+* Main:    ipcMain.on('channel', (event, data) => { console.log(data); })
+*
+*
+* Main --> Render
+* ---------------
+* Main:    mainWindow.webContents.send('channel', data); // Data is optional.
+* Render:  window.ipcRender.receive('channel', (data) => { console.log(data); });
+*
+*
+* Render --> Main (Value) --> Render
+* ----------------------------------
+* Render:  window.ipcRender.invoke('channel', data).then((result) => { console.log(result); });
+* Main:    ipcMain.handle('channel', (event, data) => { return data; });
+*
+*
+* Render --> Main (Promise) --> Render
+* ------------------------------------
+* Render:  window.ipcRender.invoke('channel', data).then((result) => { console.log(result); });
+* Main:    ipcMain.handle('channel', async (event, data) => {
+*            const myPromise = new Promise((resolve, reject) => {
+*              setTimeout(() => {
+*                resolve({test: 'foo'});
+*              }, 300);
+*            });
+*            return await myPromise.then((result) => { return result; });
+*          });
+*/

@@ -2,72 +2,96 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
-  <link href="../css/bulma.min.css" rel="stylesheet">
-  <link href="../css/styles.css" rel="stylesheet">
-  <title>SQL Query Repeater</title>
+  <link href="./../css/material-symbols.css" rel="stylesheet">
+  <link href="./../css/bulma.min.css" rel="stylesheet">
+  <link href="./../css/styles.css" rel="stylesheet">
+  <title>SQL Query Inserter</title>
 </head>
 <body>
-  <section class="section p-5">
-    <div class="container">
 
-      <h1 class="title">
-        SQL Query Repeater
-      </h1>
-
-      <div class="is-flex is-align-items-center mb-4">
-        <button id="status" class="button is-static is-small pr-1">Status: <span class="tag ml-2"></span></button>
-        <button id="btn-database-settings" class="button is-small is-warning ml-2">
-          <span class="icon icon-black">
-            <svg class="icon"><use xlink:href="../img/symbol-defs.svg#icon-settings"></use></svg>
-          </span>
-        </button>
-      </div>
-
-      <div class="field">
-        <label class="label">Query</label>
-        <div class="control">
-          <textarea id="query-area" class="textarea" rows="3" placeholder="INSERT INTO `test` (`txt`) VALUES ('hi');"></textarea>
-        </div>
-      </div>
-
-      <div class="field is-grouped is-justify-content-space-between">
-
-        <div class="field is-grouped">
-          <p class="control is-flex is-align-items-center button-checkbox button-width">
-            <label class="checkbox">
-              <input id="repeat" type="checkbox">
-              <span>Repeat</span>
-            </label>
-          </p>
-
-          <p class="control button-width">
-            <input id="timer" class="input is-link has-text-centered" type="text" placeholder="3000" value="3000" disabled>
-          </p>
-        </div>
-
-        <p class="control">
-          <button id="start" class="button is-success button-width">
-            <span class="icon icon-white">
-              <svg class="icon"><use xlink:href="../img/symbol-defs.svg#icon-play_arrow"></use></svg>
-            </span>
-            <span class="btn-text">Start</span>
-          </button>
-        </p>
-
-      </div>
-
-      <div class="field">
-        <label class="label">Result</label>
-        <div class="control">
-          <textarea id="result-area" class="textarea has-background-white-ter" rows="3" readonly placeholder="Results will be shown here..."></textarea>
-        </div>
-      </div>
-
-    </div>
+  <section class="section px-5 py-4">
+    <p class="title is-4">SQL Query Inserter</p>
+    <p class="subtitle is-14px">Automated MySQL/MariaDB Query Inserter Tool</p>
   </section>
-  <script src="../js/renderer.js"></script>
-  <script src="../js/functions.js"></script>
+
+  <div class="px-5 py-3 is-flex is-justify-content-space-between">
+    <!-- Status -->
+    <div class="control mr-2">
+      <span class="button is-small is-width-8rem is-static pr-1">Connected: <span class="tag ml-2 is-danger">No</span></span>
+    </div>
+
+    <!-- Host -->
+    <div class="control mr-2">
+      <input class="input is-link is-small" type="text" placeholder="Host">
+    </div>
+
+    <!-- Username -->
+    <div class="control mr-2">
+      <input class="input is-link is-small" type="text" placeholder="Username">
+    </div>
+
+    <!-- Password -->
+    <div class="control mr-2">
+      <input class="input is-link is-small" type="password" placeholder="Password">
+    </div>
+
+    <!-- Connect Button -->
+    <div class="control">
+      <button class="button is-link is-small is-width-5rem">Connect</button>
+    </div>
+  </div>
+
+
+
+  <div class="px-5 pt-3 is-flex is-justify-content-space-between">
+    <!-- Select Database -->
+    <div class="field is-horizontal is-flex-grow-1 is-flex-basis-20rem mr-3">
+      <div class="field-label is-normal is-14px mr-3">
+        <label class="label">Database</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <div class="select is-small is-link is-fullwidth">
+              <select>
+                <option disabled selected>Select database</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Select Table -->
+    <div class="field is-horizontal is-flex-grow-1 is-flex-basis-20rem mr-3">
+      <div class="field-label is-normal is-14px mr-3">
+        <label class="label">Table</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <div class="select is-small is-link is-fullwidth">
+              <select>
+                <option disabled selected>Select table</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Get Button -->
+    <div class="control">
+      <button class="button is-link is-small is-width-5rem">Get</button>
+    </div>
+  </div>
+
+
+
+
+
+
+  <script src="./../js/renderer.js"></script>
 </body>
 </html>

@@ -1,17 +1,17 @@
 {
-  "name": "SQL-Query-Repeater",
+  "name": "electron-starter",
   "version": "1.0.0",
-  "description": "",
+  "description": "SQL Query Inserter is a tool that allows users to insert data to SQL server easily. The application connects to the SQL server and sends prepared queries to the server, returns number of affected rows, warning status and insert ID after a successful run. This tool is useful for automating the process of inserting data into a SQL server, saving time and effort for users who need to insert large amounts of data.",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
   "author": "erman999",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
-    "electron": "^24.3.1"
+    "electron": "^26.2.3"
   },
   "dependencies": {
-    "mysql2": "^3.3.1"
+    "mysql2": "^3.6.1"
   }
 }
