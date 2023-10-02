@@ -56,6 +56,8 @@ function createSettingsWindow() {
 
 /***** Applicaton *****/
 const fs = require('fs');
+const FSWrap = require('./fswrap.js');
+const fsw = new FSWrap();
 
 
 /**** Functions ****/
@@ -66,10 +68,6 @@ async function startApp() {
   console.log(configs);
 }
 
-// Check file/folder existence
-async function fileExists(path) {
-  return fs.promises.stat(path).then(() => true, () => false);
-}
 
 // Read file as json
 async function readFileJson(pathArr) {
@@ -78,8 +76,8 @@ async function readFileJson(pathArr) {
   const pathProduction = path.join('resources', ...pathArr);
 
   // Check file existence
-  const pathCheckerDev = await fileExists(pathDevelopment);
-  const pathCheckerProd = await fileExists(pathProduction);
+  const pathCheckerDev = await fsw.exists(pathDevelopment);
+  const pathCheckerProd = await fsw.exists(pathProduction);
 
   // If file is not existed in both paths return false
   if (!pathCheckerDev && !pathCheckerProd) return false;
