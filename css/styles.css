@@ -1,15 +1,9 @@
-/* Hide scrollbar */
+/* Prevent overflow */
 html, body {
-  /* font-size: 14px; */
   overflow: hidden !important;
 }
 
-/* Hide scrollbar */
-::-webkit-scrollbar {
-  width: 0px;
-}
-
-.is-14px {
+.is-size-14px {
   font-size: 0.9rem;
 }
 
@@ -25,6 +19,10 @@ html, body {
   flex-basis: 20rem;
 }
 
+#settings {
+  border-color: #dbdbdb;
+}
+
 .table td, .table th {
   vertical-align: middle !important;
 }
@@ -32,3 +30,65 @@ html, body {
 .table th {
   text-align: center !important;
 }
+
+.table-container-h table th.random {
+  width: 1%;
+}
+
+.table-container-h table th.value {
+  width: 11rem;
+}
+
+.table-container-h {
+  max-height: 29rem;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  padding-right: 2px;
+}
+
+/* Scrollbar Width */
+.table-container-h::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+.table-container-h::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+.table-container-h::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.table-container-h::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Sticky table header - Start */
+.table-container-h table thead tr {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+}
+
+.table-container-h table thead tr th:after,
+.table-container-h table thead tr th:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+
+.table-container-h table thead tr th:before {
+  top: -1px;
+  border-top: 1px solid #dbdbdb;
+}
+
+.table-container-h table thead tr th:after {
+  bottom: -1px;
+  border-bottom: 1px solid #dbdbdb;
+}
+/* Sticky table header - End */

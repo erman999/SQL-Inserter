@@ -7,7 +7,7 @@ const ipc = {
   // From render to main
   'render': {
     'send': [
-      'channel-1'
+      'create-settings-window'
     ],
     // From main to render
     'receive': [
