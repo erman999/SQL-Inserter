@@ -55,8 +55,7 @@ function createSettingsWindow() {
 
 
 /***** Applicaton *****/
-const fs = require('fs');
-const FSWrap = require('./fswrap.js');
+const FSWrap = require('./js/fswrapper.js');
 const fsw = new FSWrap();
 
 
@@ -64,59 +63,10 @@ const fsw = new FSWrap();
 // Start application
 async function startApp() {
   // Read config file
-  const configs = await readFileJson(['configs', 'configs.json']);
+  const configs = await fsw.readFileJson(['configs', 'configs.json']);
   console.log(configs);
 }
 
-
-// Read file as json
-async function readFileJson(pathArr) {
-  // Define development and Electron-Forge folder structure
-  const pathDevelopment = path.join(...pathArr);
-  const pathProduction = path.join('resources', ...pathArr);
-
-  // Check file existence
-  const pathCheckerDev = await fsw.exists(pathDevelopment);
-  const pathCheckerProd = await fsw.exists(pathProduction);
-
-  // If file is not existed in both paths return false
-  if (!pathCheckerDev && !pathCheckerProd) return false;
-  // Assign real path
-  const realPath = pathCheckerDev ? pathDevelopment : pathProduction;
-  // Read file
-  try {
-    const contents = await fs.promises.readFile(realPath, { encoding: 'utf8' });
-    return JSON.parse(contents.trim());
-  } catch (err) {
-    console.error(err.message);
-    return false;
-  }
-}
-
-// Write file as json
-async function writeFileJson(pathArr, data) {
-  // Handle Electron-Forge folder structure
-  const pathDevelopment = path.join(...pathArr);
-  const pathProduction = path.join('resources', ...pathArr);
-
-  // Check file existence
-  const pathCheckerDev = await fileExists(pathDevelopment);
-  const pathCheckerProd = await fileExists(pathProduction);
-
-  // If file is not existed in both paths return false
-  if (!pathCheckerDev && !pathCheckerProd) return false;
-  // Assign real path
-  const realPath = pathCheckerDev ? pathDevelopment : pathProduction;
-  // Write file
-  try {
-    await fs.promises.writeFile(realPath, JSON.stringify(data));
-    console.log(`File [${realPath}] saved.`);
-    return true;
-  } catch (err) {
-    console.error(err);
-    return false;
-  }
-}
 
 // Connect to database
 async function connectToDatabase() {
