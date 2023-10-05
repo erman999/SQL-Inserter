@@ -1,11 +1,11 @@
 /* Prevent overflow */
 html, body {
-  /* overflow: hidden !important; */
+  height: 100%;
 }
 
 /* Scrollbar Width */
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 7px;
 }
 
 /* Track */
@@ -61,7 +61,9 @@ html, body {
 }
 
 .table-container-h {
-  max-height: 29rem;
+  position: relative;
+  resize: vertical;
+  height: 29rem;
   overflow-x: hidden;
   overflow-y: scroll;
   padding-right: 2px;
@@ -92,3 +94,20 @@ html, body {
   border-bottom: 1px solid #dbdbdb;
 }
 /* Sticky table header - End */
+
+
+.fake-container {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.fake-header {
+  flex: 0 1 auto;
+  background-color: red;
+}
+
+.fake-footer {
+  flex: 0 1 40px;
+  background-color: red;
+}

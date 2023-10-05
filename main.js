@@ -6,7 +6,9 @@ let mainWindow;
 function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1000,
+    minWidth: 600,
     height: 700,
+    minHeight: 300,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -17,7 +19,7 @@ function createWindow () {
   mainWindow.loadFile(path.join('html', 'index.html'));
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
