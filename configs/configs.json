@@ -1,1 +1,1 @@
-{"hello": "world"}
+{"mysql":{"host":"localhost","port":"3306","user":"root","password":"usbw","dateStrings":true},"session":{"connection":false,"database":null,"table":null,"numberOfQueries":1,"timeInterval":1000,"connectionErr":{"message":"connect ECONNREFUSED ::1:33061","code":"ECONNREFUSED","errno":-4078}}}

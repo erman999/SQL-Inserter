@@ -7,7 +7,7 @@ const path = require('node:path');
 // On Linux/MacOS filePath must be "configs/configs.json"
 
 class FSWrapper {
-  constructor() { console.log("FSWrapper called."); }
+  // constructor() { console.log("FSWrapper called."); }
 
   verifyPath(filePath) {
     if (typeof filePath === 'string') {
@@ -25,11 +25,6 @@ class FSWrapper {
 
   readFile(filePath, encoding = 'utf8') {
     return fs.promises.readFile(this.verifyPath(filePath), { encoding: encoding });
-  }
-
-  async readFileJson(filePath, encoding = 'utf8') {
-    const content = await fs.promises.readFile(this.verifyPath(filePath), { encoding: encoding });
-    return JSON.parse(content.trim());
   }
 
   writeFile(filePath, data) {

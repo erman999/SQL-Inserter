@@ -25,6 +25,13 @@
       </div>
 
       <div class="field">
+        <label class="label is-small">Port</label>
+        <div class="control">
+          <input id="port" class="input is-small" type="text" placeholder="3306">
+        </div>
+      </div>
+
+      <div class="field">
         <label class="label is-small">User</label>
         <div class="control">
           <input id="user" class="input is-small" type="text" placeholder="root">
@@ -39,17 +46,16 @@
       </div>
 
       <div class="field is-flex is-justify-content-space-between">
-        <button id="status" class="button is-static is-small pr-1">Status: <span class="tag ml-1">Checking...</span></button>
+        <button id="status" class="button is-static is-small pr-1">Status: <span class="tag ml-1">Checking</span></button>
         <button id="btn-save" class="button is-success is-small">Save & Test</button>
       </div>
 
       <div class="field">
-        <p id="err" class="help"></p>
+        <p id="err" class="help is-danger"></p>
       </div>
 
     </div>
   </section>
   <script src="../js/settings-renderer.js"></script>
-  <script src="../js/functions.js"></script>
 </body>
 </html>

@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 
 let mainWindow;
+let childWindow;
 
 function createWindow () {
   mainWindow = new BrowserWindow({
@@ -19,7 +20,7 @@ function createWindow () {
   mainWindow.loadFile(path.join('html', 'index.html'));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
@@ -40,11 +41,11 @@ app.on('window-all-closed', function () {
 
 // Create Database Settings window
 function createSettingsWindow() {
-  const childWindow = new BrowserWindow({
+  childWindow = new BrowserWindow({
     parent: mainWindow,
     modal: true,
     width: 400,
-    height: 350,
+    height: 420,
     autoHideMenuBar: false,
     resizable: false,
     webPreferences: {
@@ -53,29 +54,67 @@ function createSettingsWindow() {
     }
   });
   childWindow.loadFile(path.join('html', 'settings.html'));
+  childWindow.webContents.openDevTools();
 }
 
 
-/***** Applicaton *****/
-const FSWrap = require('./js/fswrapper.js');
-const fsw = new FSWrap();
+/***** Application *****/
+const mysql = require('mysql2');
+const FSWrapper = require('./js/fswrapper.js');
+const fsw = new FSWrapper();
+let promisePool = null;
+
+let vault = {
+  mysql: {
+    host: null,
+    port: null,
+    user: null,
+    password: null,
+    dateStrings: true
+  },
+  session: {
+    connection: false,
+    connectionErr: '',
+    database: null,
+    table: null,
+    numberOfQueries: 1,
+    timeInterval: 1000
+  }
+};
 
 
 /**** Functions ****/
 // Start application
 async function startApp() {
+
   // Read config file
-  const configs = await fsw.readFileJson(['configs', 'configs.json']);
-  console.log(configs);
+  const configs = await fsw.readFile(['configs', 'configs.json']);
+  const configsJson = JSON.parse(configs.trim());
+  vault = configsJson;
+
+
+  // Reset previous session
+  vault.session.connection = false;
+  vault.session.connectionErr = '';
+
+
+  // Try to connect database
+  let dbConnection = await connectToDatabase(vault.mysql);
+  // Update main screen status
+  mainWindow.webContents.send('update-status', dbConnection.connection);
+  // Update session
+  vault.session.connection = dbConnection.connection;
+  vault.session.connectionErr = !dbConnection.connection ? dbConnection.response : '';
+
 }
 
 
 // Connect to database
-async function connectToDatabase() {
+function connectToDatabase(credentials) {
   return new Promise(async (resolve, reject) => {
     try {
       console.log("Trying to connect database...");
-      const pool  = mysql.createPool({host: server.configs.mysqlIp, user: server.configs.mysqlUser, password: server.configs.mysqlPassword, dateStrings: true});
+      const pool  = mysql.createPool(credentials);
       const poolTest = pool.promise();
       const [rows, fields] = await poolTest.query("SELECT 1 AS connected;");
       promisePool = poolTest;
@@ -89,40 +128,36 @@ async function connectToDatabase() {
 
 
 /**** IPC Main Channels ****/
-// Render --> Main
+// Open settings window
 ipcMain.on('create-settings-window', (event, data) => {
+  // Create settings window
   createSettingsWindow();
+  // Send mysql data when loaded
+  childWindow.webContents.once('did-finish-load', async () => {
+    childWindow.webContents.send('configs', vault);
+  });
 });
 
 
-// Main --> Render
-// mainWindow.webContents.send('channel-2', data);
+// Save settings
+ipcMain.handle('save-settings', async (event, data) => {
+  // Update mysql settings
+  vault.mysql.host = data.host;
+  vault.mysql.port = data.port;
+  vault.mysql.user = data.user;
+  vault.mysql.password = data.password;
 
+  // Save new settings
+  await fsw.writeFileJson(['configs', 'configs.json'], vault);
 
-// // Render --> Main (Value) --> Render
-// ipcMain.handle('channel-3', (event, data) => {
-//   let reverseText = reverseString(data);
-//   console.log(`Render --> Main (Value) --> Render [Received data: ${data}] [Send data: ${reverseText}]`);
-//   return reverseText;
-// });
+  // Try to connect with new settings & return Promise to settings window
+  return await connectToDatabase(vault.mysql).then((result) => {
+    // Update session
+    vault.session.connection = result.connection;
+    // Update main screen status
+    mainWindow.webContents.send('update-status', result.connection);
+    // Return result to settings window
+    return result;
+  });
 
-
-// // Render --> Main (Promise) --> Render
-// ipcMain.handle('channel-4', async (event, data) => {
-//   let timer = Math.floor(Math.random()*1000);
-//   let response = `Resolved after ${timer}ms`;
-//   console.log(`Render --> Main (Promise) --> Render [Received data: ${data}] [Send data: ${response}]`);
-//
-//   // Define promise function
-//   const myPromise = new Promise((resolve, reject) => {
-//     setTimeout(() => {
-//       resolve(response);
-//     }, timer);
-//   });
-//
-//   // Return promise
-//   return await myPromise.then((result) => {
-//     return result;
-//   });
-//
-// });
+});

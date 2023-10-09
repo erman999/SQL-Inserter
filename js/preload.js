@@ -11,12 +11,12 @@ const ipc = {
     ],
     // From main to render
     'receive': [
-      'channel-2'
+      'configs',
+      'update-status'
     ],
     // From render to main and back again
     'sendReceive': [
-      'channel-3',
-      'channel-4'
+      'save-settings'
     ]
   }
 };
