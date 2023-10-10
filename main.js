@@ -63,7 +63,13 @@ const mysql = require('mysql2');
 const FSWrapper = require('./js/fswrapper.js');
 const fsw = new FSWrapper();
 
-const Vault = {
+const SQL = {
+  connection: false,
+  connectionErr: '',
+  pool: null
+};
+
+const User = {
   mysql: {
     host: null,
     port: null,
@@ -72,8 +78,6 @@ const Vault = {
     dateStrings: true
   },
   session: {
-    connection: false,
-    connectionErr: '',
     database: null,
     table: null,
     numberOfQueries: 1,
@@ -89,22 +93,21 @@ async function startApp() {
   // Read config file
   const configs = await fsw.readFile(['configs', 'configs.json']);
   const configsJson = JSON.parse(configs.trim());
-  // Update Vault
-  Object.assign(Vault, configsJson);
+  // Update User
+  Object.assign(User, configsJson);
 
-  // Reset previous session
-  Vault.session.connection = false;
-  Vault.session.connectionErr = '';
 
-  // Try to connect database
-  let dbConnection = await connectToDatabase(Vault.mysql);
-  // Update main screen status
+  // Connect to database
+  let dbConnection = await connectToDatabase(User.mysql);
+  SQL.pool = dbConnection.pool;
+  SQL.connection = dbConnection.connection;
+  SQL.connectionErr = !dbConnection.connection ? dbConnection.response : '';
   mainWindow.webContents.send('update-status', dbConnection.connection);
-  // Update session
-  Vault.session.connection = dbConnection.connection;
-  Vault.session.connectionErr = !dbConnection.connection ? dbConnection.response : '';
 
-  console.log(Vault);
+  console.log(SQL);
+
+  let db = await showDatabases(SQL.pool);
+  console.log(db);
 }
 
 
@@ -117,11 +120,61 @@ function connectToDatabase(credentials) {
       const [rows, fields] = await promisePool.query("SELECT 1 AS connected;");
       resolve({connection: true, pool: promisePool, error: false, response: rows});
     } catch (err) {
-      resolve({connection: false, pool: false, error: true, response: err.code});
+      resolve({connection: false, pool: null, error: true, response: err.code});
     }
   });
 }
 
+
+// Execute query
+async function sqlQuery(pool, query) {
+  try {
+    const [rows, fields] = await pool.query(query);
+    return {result: true, response: rows};
+  } catch (e) {
+    console.log(e);
+    return {result: false, response: e};
+  }
+}
+
+
+async function showDatabases(pool) {
+  // Get databases from server
+  let serverDatabases = await sqlQuery(pool, 'SHOW DATABASES;');
+  // Error handling
+  if (!serverDatabases.result) { return {databases: [], error: true}; }
+  // Organise values
+  let databases = [];
+  serverDatabases.response.forEach((db, i) => {
+    databases.push(Object.values(db)[0]);
+  });
+  // Define non-user databases
+  let toRemove = ['mysql', 'information_schema', 'performance_schema'];
+  // Remove non-user databases
+  databases = databases.filter((el) => !toRemove.includes(el));
+  // Return databases
+  return {databases: databases, error: false};
+}
+
+
+
+async function showTables(pool, database) {
+  let databaseTables = await sqlQuery(pool, `SHOW TABLES FROM ${database};`);
+  if (!databaseTables.result) { return {tables: [], error: true}; }
+  let tables = [];
+  databaseTables.response.forEach((db, i) => {
+    tables.push(Object.values(db)[0]);
+  });
+  return {tables: tables, error: false};
+}
+
+
+
+async function showFields(pool, database, table) {
+  let fields = await sqlQuery(pool, `SHOW FIELDS FROM \`${database}\`.\`${table}\`;`);
+  if (!fields.result) { return {fields: [], error: true}; }
+  return {fields: fields, error: false};
+}
 
 
 
@@ -133,7 +186,7 @@ ipcMain.on('create-settings-window', (event, data) => {
   createSettingsWindow();
   // Send mysql data when loaded
   childWindow.webContents.once('did-finish-load', async () => {
-    childWindow.webContents.send('configs', Vault);
+    childWindow.webContents.send('configs', User);
   });
 });
 
@@ -141,23 +194,54 @@ ipcMain.on('create-settings-window', (event, data) => {
 // Save settings
 ipcMain.handle('save-settings', async (event, data) => {
   // Update mysql settings
-  Vault.mysql.host = data.host;
-  Vault.mysql.port = data.port;
-  Vault.mysql.user = data.user;
-  Vault.mysql.password = data.password;
+  User.mysql.host = data.host;
+  User.mysql.port = data.port;
+  User.mysql.user = data.user;
+  User.mysql.password = data.password;
 
   // Save new settings
-  await fsw.writeFileJson(['configs', 'configs.json'], Vault);
+  await fsw.writeFileJson(['configs', 'configs.json'], User);
 
   // Try to connect with new settings & return Promise to settings window
-  return await connectToDatabase(Vault.mysql).then((result) => {
+  return await connectToDatabase(User.mysql).then((result) => {
     // Update session
-    Vault.session.connection = result.connection;
-    Vault.session.connectionErr = !result.connection ? result.response : '';
+    SQL.pool = result.pool;
+    SQL.connection = result.connection;
+    SQL.connectionErr = !result.connection ? result.response : '';
     // Update main screen status
     mainWindow.webContents.send('update-status', result.connection);
     // Return result (excluding pool object)
     return {connection: result.connection, error: result.error, response: result.response};
   });
+});
 
+
+
+
+
+ipcMain.handle('refresh', async (event, data) => {
+  const myPromise = new Promise(async (resolve, reject) => {
+    let db = await showDatabases(SQL.pool);
+    resolve(db);
+  });
+  return await myPromise.then((result) => { return result; });
+});
+
+
+
+ipcMain.handle('list-tables', async (event, database) => {
+  const myPromise = new Promise(async (resolve, reject) => {
+    let tables = await showTables(SQL.pool, database);
+    resolve(tables);
+  });
+  return await myPromise.then((result) => { return result; });
+});
+
+
+ipcMain.handle('list-fields', async (event, data) => {
+  const myPromise = new Promise(async (resolve, reject) => {
+    let fields = await showFields(SQL.pool, data.database, data.table);
+    resolve(fields);
+  });
+  return await myPromise.then((result) => { return result; });
 });

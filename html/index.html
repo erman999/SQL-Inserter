@@ -5,15 +5,14 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
   <link href="./../css/material-symbols.css" rel="stylesheet">
   <link href="./../css/bulma.min.css" rel="stylesheet">
-  <link href="./../css/bulma-switch.min.css" rel="stylesheet">
   <link href="./../css/styles.css" rel="stylesheet">
-  <title>SQL Query Inserter</title>
+  <title>SQL Inserter</title>
 </head>
 <body>
 
   <section class="section is-flex is-justify-content-space-between px-5 py-4">
     <div class="">
-      <p class="title is-4">SQL Query Inserter</p>
+      <p class="title is-4">SQL Inserter</p>
       <p class="subtitle is-size-14px">Automated MySQL/MariaDB Query Inserter Tool</p>
     </div>
 
@@ -38,8 +37,8 @@
       <label class="label mr-3 mb-0">Database</label>
       <div class="control is-flex-grow-1">
         <div class="select is-small is-link is-fullwidth">
-          <select>
-            <option disabled selected>Select Database</option>
+          <select id="databases">
+            <option value="0" selected disabled>Select database</option>
           </select>
         </div>
       </div>
@@ -50,7 +49,7 @@
       <label class="label mr-3 mb-0">Table</label>
       <div class="control is-flex-grow-1">
         <div class="select is-small is-link is-fullwidth">
-          <select>
+          <select id="tables">
             <option disabled selected>Select Table</option>
           </select>
         </div>
@@ -60,12 +59,12 @@
     <!-- Get Button -->
     <div class="field">
       <div class="control">
-        <button class="button is-small is-link is-width-5rem">
+        <button id="refresh" class="button is-small is-link">
           <span class="icon-text is-align-items-center">
             <span class="icon mr-1">
-              <span class="material-symbols-rounded is-size-5">compare_arrows</span>
+              <span class="material-symbols-rounded is-size-5">refresh</span>
             </span>
-            <span>Get</span>
+            <span>Refresh</span>
           </span>
         </button>
       </div>
@@ -74,258 +73,131 @@
   </div>
 
   <!-- <div class="fake-container"> -->
-    <!-- <div class="fake-header"></div> -->
-    <div class="columns px-5 pt-3">
-      <div class="column">
-        <div class="table-container-h">
-          <table class="table is-size-14px is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+  <!-- <div class="fake-header"></div> -->
+  <div class="columns px-5 pt-3">
+    <div class="column">
+      <div class="table-container-h">
+        <table class="table is-size-7 is-bordered is-striped is-narrow is-hoverable is-fullwidth">
 
-            <thead>
-              <tr>
-                <th class="has-text-link has-background-link-light">Column</th>
-                <th class="random has-text-link has-background-link-light">Random</th>
-                <th class="value has-text-link has-background-link-light">Value</th>
-              </tr>
-            </thead>
-            <tbody>
+          <thead>
+            <tr>
+              <th class="has-text-link has-background-link-light">Field</th>
+              <th class="has-text-link has-background-link-light">Type</th>
+              <th class="random has-text-link has-background-link-light">Rnd</th>
+              <th class="value has-text-link has-background-link-light">Value</th>
+            </tr>
+          </thead>
+          <tbody>
 
-              <tr>
-                <td>id 1</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
+            <tr>
+              <td>Column X</td>
+              <td>INT</td>
+              <td><input type="checkbox"></td>
+              <td><input class="input is-small" type="text" value="0, 100"></td>
+            </tr>
 
-              <tr>
-                <td>id 2</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
+            <tr>
+              <td>Column X</td>
+              <td>VARCHAR</td>
+              <td><input type="checkbox"></td>
+              <td><input class="input is-small" type="text" value="Foo, Bar, Baz, Qux"></td>
+            </tr>
 
-              <tr>
-                <td>id 3</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
+            <tr>
+              <td>Column X</td>
+              <td>DATETIME</td>
+              <td><input type="checkbox"></td>
+              <td><input class="input is-small" type="text" value="test"></td>
+            </tr>
 
-              <tr>
-                <td>id 4</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
+            <tr>
+              <td>Column X</td>
+              <td>MEDIUMINT</td>
+              <td><input type="checkbox"></td>
+              <td><input class="input is-small" type="text" value="test"></td>
+            </tr>
 
-              <tr>
-                <td>id 5</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
+            <tr>
+              <td>Column X</td>
+              <td>VARCHAR</td>
+              <td><input type="checkbox"></td>
+              <td><input class="input is-small" type="text" value="test"></td>
+            </tr>
 
-              <tr>
-                <td>id 6</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
 
-              <tr>
-                <td>id 7</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
 
-              <tr>
-                <td>id 8</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
-
-              <tr>
-                <td>id 9</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
-
-              <tr>
-                <td>id 10</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
-
-              <tr>
-                <td>id 11</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
-
-              <tr>
-                <td>id 12</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
-
-              <tr>
-                <td>id 13</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
-
-              <tr>
-                <td>id 14</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
-
-              <tr>
-                <td>id 15</td>
-                <td>
-                  <div class="field is-flex is-justify-content-center is-size-14px">
-                    <input id="switchRoundedDefault" type="checkbox" name="switchRoundedDefault" class="switch is-small is-rounded" checked="checked">
-                    <label for="switchRoundedDefault"></label>
-                  </div>
-                </td>
-                <td><input class="input is-small" type="text"></td>
-              </tr>
-
-            </tbody>
-          </table>
-        </div>
-
+          </tbody>
+        </table>
       </div>
-      <div class="column">
 
-        <textarea class="textarea is-size-14px"></textarea>
-
-        <div class="pt-3 is-flex is-justify-content-space-between">
-
-          <div class="field has-addons">
-            <p class="control">
-              <a class="button is-static is-small">
-                Number of Queries
-              </a>
-            </p>
-            <p class="control is-width-5rem">
-              <input class="input is-small has-text-centered" type="text" value="1">
-            </p>
-          </div>
-
-          <div class="field has-addons">
-            <p class="control">
-              <a class="button is-static is-small">
-                Time Interval (ms)
-              </a>
-            </p>
-            <p class="control is-width-5rem">
-              <input class="input is-small has-text-centered" type="text" value="1000">
-            </p>
-          </div>
-
-        </div>
-
-
-        <div class="pt-1 is-flex is-justify-content-space-between">
-
-          <button class="button is-small is-info is-width-8rem">
-            <span class="icon-text is-align-items-center">
-              <span class="icon mr-1">
-                <span class="material-symbols-rounded is-size-5">task_alt</span>
-              </span>
-              <span>Prepare</span>
-            </span>
-          </button>
-
-
-          <button class="button is-small is-warning is-width-8rem">
-            <span class="icon-text is-align-items-center">
-              <span class="icon mr-1">
-                <span class="material-symbols-rounded">content_copy</span>
-              </span>
-              <span>Copy</span>
-            </span>
-          </button>
-
-
-          <button class="button is-small is-success is-width-8rem">
-            <span class="icon-text is-align-items-center">
-              <span class="icon mr-1">
-                <span class="material-symbols-rounded is-size-3">play_arrow</span>
-              </span>
-              <span>Execute</span>
-            </span>
-          </button>
-
-        </div>
-
-      </div>
     </div>
-    <!-- <div class="fake-footer"></div> -->
+    <div class="column">
+
+      <textarea class="textarea is-size-14px"></textarea>
+
+      <div class="pt-3 is-flex is-justify-content-space-between">
+
+        <div class="field has-addons">
+          <p class="control">
+            <a class="button is-static is-small">
+              Number of Queries
+            </a>
+          </p>
+          <p class="control is-width-5rem">
+            <input class="input is-small has-text-centered" type="text" value="1">
+          </p>
+        </div>
+
+        <div class="field has-addons">
+          <p class="control">
+            <a class="button is-static is-small">
+              Time Interval (ms)
+            </a>
+          </p>
+          <p class="control is-width-5rem">
+            <input class="input is-small has-text-centered" type="text" value="1000">
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="pt-1 is-flex is-justify-content-space-between">
+
+        <button class="button is-small is-info is-width-8rem">
+          <span class="icon-text is-align-items-center">
+            <span class="icon mr-1">
+              <span class="material-symbols-rounded is-size-5">task_alt</span>
+            </span>
+            <span>Prepare</span>
+          </span>
+        </button>
+
+
+        <button class="button is-small is-warning is-width-8rem">
+          <span class="icon-text is-align-items-center">
+            <span class="icon mr-1">
+              <span class="material-symbols-rounded">content_copy</span>
+            </span>
+            <span>Copy</span>
+          </span>
+        </button>
+
+
+        <button class="button is-small is-success is-width-8rem">
+          <span class="icon-text is-align-items-center">
+            <span class="icon mr-1">
+              <span class="material-symbols-rounded is-size-3">play_arrow</span>
+            </span>
+            <span>Execute</span>
+          </span>
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+  <!-- <div class="fake-footer"></div> -->
   <!-- </div> -->
 
 
