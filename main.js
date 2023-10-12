@@ -16,11 +16,8 @@ function createWindow () {
       preload: path.join(__dirname, 'js', 'preload.js')
     }
   });
-
   mainWindow.loadFile(path.join('html', 'index.html'));
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
@@ -54,7 +51,7 @@ function createSettingsWindow() {
     }
   });
   childWindow.loadFile(path.join('html', 'settings.html'));
-  childWindow.webContents.openDevTools();
+  // childWindow.webContents.openDevTools();
 }
 
 
@@ -78,8 +75,8 @@ const User = {
     dateStrings: true
   },
   session: {
-    database: null,
-    table: null,
+    database: 0,
+    table: 0,
     numberOfQueries: 1,
     timeInterval: 1000
   }
@@ -104,10 +101,15 @@ async function startApp() {
   SQL.connectionErr = !dbConnection.connection ? dbConnection.response : '';
   mainWindow.webContents.send('update-status', dbConnection.connection);
 
-  console.log(SQL);
+  if (SQL.connection) {
+    const initialize = {
+      databases: await showDatabases(SQL.pool),
+      tables: await showTables(SQL.pool, User.session.database),
+      user: User,
+    };
+    mainWindow.webContents.send('initialize', initialize);
+  }
 
-  let db = await showDatabases(SQL.pool);
-  console.log(db);
 }
 
 
@@ -132,7 +134,6 @@ async function sqlQuery(pool, query) {
     const [rows, fields] = await pool.query(query);
     return {result: true, response: rows};
   } catch (e) {
-    console.log(e);
     return {result: false, response: e};
   }
 }
@@ -186,7 +187,14 @@ ipcMain.on('create-settings-window', (event, data) => {
   createSettingsWindow();
   // Send mysql data when loaded
   childWindow.webContents.once('did-finish-load', async () => {
-    childWindow.webContents.send('configs', User);
+    const data = {
+      user: User,
+      sql: {
+        connection: SQL.connection,
+        connectionErr: SQL.connectionErr
+      }
+    };
+    childWindow.webContents.send('configs', data);
   });
 });
 
@@ -219,7 +227,7 @@ ipcMain.handle('save-settings', async (event, data) => {
 
 
 
-ipcMain.handle('refresh', async (event, data) => {
+ipcMain.handle('list-databases', async (event, data) => {
   const myPromise = new Promise(async (resolve, reject) => {
     let db = await showDatabases(SQL.pool);
     resolve(db);
@@ -244,4 +252,12 @@ ipcMain.handle('list-fields', async (event, data) => {
     resolve(fields);
   });
   return await myPromise.then((result) => { return result; });
+});
+
+
+
+// Update session
+ipcMain.on('update-session', async (event, data) => {
+  User.session[data.property] = data.value;
+  await fsw.writeFileJson(['configs', 'configs.json'], User);
 });

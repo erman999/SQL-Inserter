@@ -7,17 +7,19 @@ const ipc = {
   // From render to main
   'render': {
     'send': [
-      'create-settings-window'
+      'create-settings-window',
+      'update-session'
     ],
     // From main to render
     'receive': [
       'configs',
-      'update-status'
+      'update-status',
+      'initialize'
     ],
     // From render to main and back again
     'sendReceive': [
       'save-settings',
-      'refresh',
+      'list-databases',
       'list-tables',
       'list-fields'
     ]

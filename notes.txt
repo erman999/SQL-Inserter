@@ -1,0 +1,3 @@
+
+Performance test
+hyperfine "bun hello.js" "node hello.js" "deno run hello.js" --warmup=100

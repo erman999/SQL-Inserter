@@ -14,13 +14,12 @@ function updateStatus(bool) {
 }
 
 window.ipcRender.receive('configs', (data) => {
-  console.log(data);
-  host.value = data.mysql.host;
-  port.value = data.mysql.port;
-  user.value = data.mysql.user;
-  password.value = data.mysql.password;
-  updateStatus(data.session.connection);
-  err.textContent = data.session.connectionErr;
+  host.value = data.user.mysql.host;
+  port.value = data.user.mysql.port;
+  user.value = data.user.mysql.user;
+  password.value = data.user.mysql.password;
+  updateStatus(data.sql.connection);
+  err.textContent = data.sql.connectionErr;
 });
 
 btnSave.addEventListener('click', function() {
@@ -31,7 +30,6 @@ btnSave.addEventListener('click', function() {
   mysql.password = password.value.trim();
 
   window.ipcRender.invoke('save-settings', mysql).then((result) => {
-    console.log(result);
     updateStatus(result.connection);
     err.textContent = !result.connection ? result.response : '';
     return false;

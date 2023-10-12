@@ -1,1 +1,1 @@
-{"mysql":{"host":"localhost","port":"3306","user":"root","password":"usbw","dateStrings":true},"session":{"connection":true,"database":null,"table":null,"numberOfQueries":1,"timeInterval":1000,"connectionErr":""}}
+{"mysql":{"host":"localhost","port":"3306","user":"root","password":"usbw","dateStrings":true},"session":{"database":"gh123","table":"markalama","numberOfQueries":"10","timeInterval":"20"}}

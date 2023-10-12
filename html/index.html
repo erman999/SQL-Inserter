@@ -37,7 +37,7 @@
       <label class="label mr-3 mb-0">Database</label>
       <div class="control is-flex-grow-1">
         <div class="select is-small is-link is-fullwidth">
-          <select id="databases">
+          <select id="databases" data-property="database">
             <option value="0" selected disabled>Select database</option>
           </select>
         </div>
@@ -49,14 +49,14 @@
       <label class="label mr-3 mb-0">Table</label>
       <div class="control is-flex-grow-1">
         <div class="select is-small is-link is-fullwidth">
-          <select id="tables">
+          <select id="tables" data-property="table">
             <option disabled selected>Select Table</option>
           </select>
         </div>
       </div>
     </div>
 
-    <!-- Get Button -->
+    <!-- Refresh Button -->
     <div class="field">
       <div class="control">
         <button id="refresh" class="button is-small is-link">
@@ -144,7 +144,7 @@
             </a>
           </p>
           <p class="control is-width-5rem">
-            <input class="input is-small has-text-centered" type="text" value="1">
+            <input id="number-of-queries" data-property="numberOfQueries" class="input is-small has-text-centered" type="text" value="1">
           </p>
         </div>
 
@@ -155,7 +155,7 @@
             </a>
           </p>
           <p class="control is-width-5rem">
-            <input class="input is-small has-text-centered" type="text" value="1000">
+            <input id="time-interval" data-property="timeInterval" class="input is-small has-text-centered" type="text" value="1000">
           </p>
         </div>
 

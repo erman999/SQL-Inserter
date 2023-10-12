@@ -4,6 +4,9 @@ const status = document.querySelector('#status span');
 const refresh = document.querySelector('#refresh');
 const databases = document.querySelector('#databases');
 const tables = document.querySelector('#tables');
+const numberOfQueries = document.querySelector('#number-of-queries');
+const timeInterval = document.querySelector('#time-interval');
+const watchElements = [databases, tables, numberOfQueries, timeInterval];
 
 
 /***** Functions *****/
@@ -63,7 +66,7 @@ settings.addEventListener('click', function() {
 
 
 refresh.addEventListener('click', function() {
-  window.ipcRender.invoke('refresh', null).then((result) => {
+  window.ipcRender.invoke('list-databases', null).then((result) => {
     listDatabases(databases, result);
   });
 });
@@ -84,10 +87,32 @@ tables.addEventListener('change', function() {
 });
 
 
+watchElements.forEach((el, i) => {
+  el.addEventListener('change', function() {
+    const property = this.dataset.property;
+    const value = this.value;
+    const data = {property: property, value: value};
+    window.ipcRender.send('update-session', data);
+  });
+});
+
 
 
 
 /***** IPC Renderer Channels *****/
+window.ipcRender.receive('initialize', (data) => {
+  console.log(data);
+
+  if (!data.databases.error) { listDatabases(databases, data.databases); }
+  if (!data.tables.error) { listTables(tables, data.tables); }
+
+  databases.value = data.user.session.database;
+  tables.value = data.user.session.table;
+  numberOfQueries.value = parseInt(data.user.session.numberOfQueries);
+  timeInterval.value = parseInt(data.user.session.timeInterval);
+
+});
+
 window.ipcRender.receive('update-status', (data) => {
   updateStatus(data);
 });
