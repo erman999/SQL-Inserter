@@ -1,3 +1,54 @@
 
 Performance test
 hyperfine "bun hello.js" "node hello.js" "deno run hello.js" --warmup=100
+
+
+
+
+
+[
+    "my_INT",
+    "my_VARCHAR",
+    "my_TEXT",
+    "my_DATE",
+    "my_TINYINT",
+    "my_SMALLINT",
+    "my_MEDIUMINT",
+    "my_INT",
+    "my_BIGINT",
+    "my_DECIMAL",
+    "my_FLOAT",
+    "my_DOUBLE",
+    "my_REAL",
+    "my_BIT",
+    "my_BOOLEAN",
+    "my_SERIAL",
+    "my_DATE",
+    "my_DATETIME",
+    "my_TIMESTAMP",
+    "my_TIME",
+    "my_YEAR",
+    "my_CHAR",
+    "my_VARCHAR",
+    "my_TINYTEXT",
+    "my_TEXT",
+    "my_MEDIUMTEXT",
+    "my_LONGTEXT",
+    "my_BINARY",
+    "my_VARBINARY",
+    "my_TINYBLOB",
+    "my_BLOB",
+    "my_MEDIUMBLOB",
+    "my_LONGBLOB",
+    "my_ENUM",
+    "my_SET",
+    "my_GEOMETRY",
+    "my_POINT",
+    "my_LINESTRING",
+    "my_POLYGON",
+    "my_MULTIPOINT",
+    "my_MULTILINESTRING",
+    "my_MULTIPOLYGON",
+    "my_GEOMETRYCOLLECTION",
+    "my_JSON"
+]

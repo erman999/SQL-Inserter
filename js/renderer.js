@@ -4,6 +4,7 @@ const status = document.querySelector('#status span');
 const refresh = document.querySelector('#refresh');
 const databases = document.querySelector('#databases');
 const tables = document.querySelector('#tables');
+const fieldsTable = document.querySelector('#fields-table');
 const numberOfQueries = document.querySelector('#number-of-queries');
 const timeInterval = document.querySelector('#time-interval');
 const watchElements = [databases, tables, numberOfQueries, timeInterval];
@@ -59,6 +60,46 @@ function listTables(selectElement, data) {
 }
 
 
+
+
+function listFields(selectElement, data) {
+  // data = {error: boolean, dataases: []}
+
+  if (data.error) { console.log("Error: listFields"); }
+
+  while (selectElement.firstChild) {
+    selectElement.removeChild(selectElement.lastChild);
+  }
+
+  data.fields.forEach((field, i) => {
+    console.log(field);
+
+    
+    let fieldDefault = '';
+    if (field.Default === null) {
+      fieldDefault = '';
+    } else if (field.Default === 'CURRENT_TIMESTAMP') {
+      let dt = new Date();
+      fieldDefault = dt.toISOString().replace('T', ' ').split('\.')[0];
+    } else {
+      fieldDefault = field.Default;
+    }
+
+    const temp = `
+    <tr>
+    <td>${field.Field}</td>
+    <td>${field.Type}</td>
+    <td><input type="checkbox"></td>
+    <td><input class="input is-small" type="text" value="${fieldDefault}"></td>
+    </tr>`;
+
+    selectElement.insertAdjacentHTML('beforeend', temp);
+  });
+
+  return false;
+}
+
+
 /***** Event Listeners *****/
 settings.addEventListener('click', function() {
   window.ipcRender.send('create-settings-window');
@@ -83,6 +124,7 @@ tables.addEventListener('change', function() {
   const data = {database: databases.value, table: tables.value};
   window.ipcRender.invoke('list-fields', data).then((result) => {
     console.log(result);
+    listFields(fieldsTable, result);
   });
 });
 

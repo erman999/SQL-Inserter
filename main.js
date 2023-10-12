@@ -174,7 +174,7 @@ async function showTables(pool, database) {
 async function showFields(pool, database, table) {
   let fields = await sqlQuery(pool, `SHOW FIELDS FROM \`${database}\`.\`${table}\`;`);
   if (!fields.result) { return {fields: [], error: true}; }
-  return {fields: fields, error: false};
+  return {fields: fields.response, error: false};
 }
 
 
