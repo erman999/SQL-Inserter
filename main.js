@@ -224,7 +224,19 @@ ipcMain.handle('save-settings', async (event, data) => {
 });
 
 
+ipcMain.handle('refresh', async (event, data) => {
 
+  const myPromise = new Promise(async (resolve, reject) => {
+    const pack = {
+      databases: await showDatabases(SQL.pool),
+      tables: await showTables(SQL.pool, data.database),
+      fields: await showFields(SQL.pool, data.database, data.table)
+    };
+    resolve(pack);
+  });
+
+  return await myPromise.then((result) => { return result; });
+});
 
 
 ipcMain.handle('list-databases', async (event, data) => {

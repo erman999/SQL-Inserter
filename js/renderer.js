@@ -74,7 +74,7 @@ function listFields(selectElement, data) {
   data.fields.forEach((field, i) => {
     console.log(field);
 
-    
+
     let fieldDefault = '';
     if (field.Default === null) {
       fieldDefault = '';
@@ -89,7 +89,6 @@ function listFields(selectElement, data) {
     <tr>
     <td>${field.Field}</td>
     <td>${field.Type}</td>
-    <td><input type="checkbox"></td>
     <td><input class="input is-small" type="text" value="${fieldDefault}"></td>
     </tr>`;
 
@@ -107,9 +106,21 @@ settings.addEventListener('click', function() {
 
 
 refresh.addEventListener('click', function() {
-  window.ipcRender.invoke('list-databases', null).then((result) => {
-    listDatabases(databases, result);
+
+  const data = {
+    database: databases.value,
+    table: tables.value
+  };
+
+  window.ipcRender.invoke('refresh', data).then((result) => {
+    console.log(result);
+    listDatabases(databases, result.databases);
+    listTables(tables, result.tables);
+    listFields(fieldsTable, result.fields);
+    databases.value = data.database;
+    tables.value = data.table;
   });
+
 });
 
 
@@ -123,7 +134,6 @@ databases.addEventListener('change', function() {
 tables.addEventListener('change', function() {
   const data = {database: databases.value, table: tables.value};
   window.ipcRender.invoke('list-fields', data).then((result) => {
-    console.log(result);
     listFields(fieldsTable, result);
   });
 });

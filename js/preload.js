@@ -19,6 +19,7 @@ const ipc = {
     // From render to main and back again
     'sendReceive': [
       'save-settings',
+      'refresh',
       'list-databases',
       'list-tables',
       'list-fields'
