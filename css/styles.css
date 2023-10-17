@@ -1,26 +1,27 @@
 /* Prevent overflow */
 html, body {
   height: 100%;
+  overflow: hidden;
 }
 
 /* Scrollbar Width */
-::-webkit-scrollbar {
+.table-container-h::-webkit-scrollbar {
   width: 7px;
 }
 
 /* Track */
-::-webkit-scrollbar-track {
+.table-container-h::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 
 /* Handle */
-::-webkit-scrollbar-thumb {
+.table-container-h::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 10px;
 }
 
 /* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
+.table-container-h::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 
