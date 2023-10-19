@@ -1,4 +1,4 @@
-# SQL Query Inserter
+# SQL Inserter
 
 
 > ⚠️ This package is still uncomplete
