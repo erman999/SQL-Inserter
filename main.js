@@ -58,13 +58,11 @@ function createSettingsWindow() {
 /***** Application *****/
 const mysql = require('mysql2');
 const FSWrapper = require('./js/fswrapper.js');
+const SQLConnector = require('./js/SQLConnector.js');
+
 const fsw = new FSWrapper();
 
-const SQL = {
-  connection: false,
-  connectionErr: '',
-  pool: null
-};
+const SQL = new SQLConnector();
 
 const User = {
   mysql: {
@@ -86,20 +84,21 @@ const User = {
 /**** Functions ****/
 // Start application
 async function startApp() {
-
   // Read config file
   const configs = await fsw.readFile(['configs', 'configs.json']);
   const configsJson = JSON.parse(configs.trim());
-  // Update User
+
+  // Update User Object
   Object.assign(User, configsJson);
 
+  // Connect to SQL server
+  await SQL.connect(User.mysql);
 
-  // Connect to database
-  let dbConnection = await connectToDatabase(User.mysql);
-  SQL.pool = dbConnection.pool;
-  SQL.connection = dbConnection.connection;
-  SQL.connectionErr = !dbConnection.connection ? dbConnection.response : '';
-  mainWindow.webContents.send('update-status', dbConnection.connection);
+
+  SQL.mycb(function() {
+    mainWindow.webContents.send('initialize', "TEST");
+  });
+
 
   if (SQL.connection) {
     const initialize = {
@@ -108,14 +107,34 @@ async function startApp() {
       user: User,
     };
     mainWindow.webContents.send('initialize', initialize);
+  } else {
+    retryToConnect();
   }
-
 }
 
+// Update SQL object
+function updateSQL(dbConnection) {
+  SQL.pool = dbConnection.pool;
+  SQL.connection = dbConnection.connection;
+  SQL.connectionErr = !dbConnection.connection ? dbConnection.response : '';
+  mainWindow.webContents.send('update-status', SQL.connection);
+}
+
+// Create an SQL connection loop and keep running until connection establish
+async function retryToConnect() {
+  let dbConnection = await connectToDatabase(User.mysql);
+  updateSQL(dbConnection);
+  if (!SQL.connection) {
+    setTimeout(function() {
+      retryToConnect();
+    }, 3000);
+  }
+}
 
 // Connect to database
 function connectToDatabase(credentials) {
   return new Promise(async (resolve, reject) => {
+    console.log('Trying to connect SQL server...');
     try {
       const pool  = mysql.createPool(credentials);
       const promisePool = pool.promise();
