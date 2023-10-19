@@ -58,11 +58,10 @@ function createSettingsWindow() {
 /***** Application *****/
 const mysql = require('mysql2');
 const FSWrapper = require('./js/fswrapper.js');
-const SQLConnector = require('./js/SQLConnector.js');
+const SQLWrapper = require('./js/SQLWrapper.js');
 
 const fsw = new FSWrapper();
-
-const SQL = new SQLConnector();
+const SQL = new SQLWrapper();
 
 const User = {
   mysql: {
@@ -91,25 +90,50 @@ async function startApp() {
   // Update User Object
   Object.assign(User, configsJson);
 
+  console.log("############################");
+
   // Connect to SQL server
-  await SQL.connect(User.mysql);
+  let xSQL = await SQL.setOptions(User.mysql).connect();
+  console.log(xSQL);
 
 
-  SQL.mycb(function() {
-    mainWindow.webContents.send('initialize', "TEST");
-  });
+  // SQL.reconnect();
+
+  // let cnn = SQL.isConnected();
+  // console.log("isConnected", cnn);
+
+  // let dbs = await SQL.showDatabases();
+  // console.log(dbs);
+
+  // let tbls = await SQL.showTables('test');
+  // console.log(tbls);
+
+  // let flds = await SQL.showFields('test', 'test');
+  // console.log(flds);
 
 
-  if (SQL.connection) {
-    const initialize = {
-      databases: await showDatabases(SQL.pool),
-      tables: await showTables(SQL.pool, User.session.database),
-      user: User,
-    };
-    mainWindow.webContents.send('initialize', initialize);
-  } else {
-    retryToConnect();
-  }
+  // setInterval(async function() {
+  //
+  //   let qyr = await SQL.query('SELECT 1');
+  //   console.log(qyr);
+  //
+  // }, 3000);
+
+
+
+  console.log("############################");
+
+
+  // if (SQL.connection) {
+  //   const initialize = {
+  //     databases: await showDatabases(SQL.pool),
+  //     tables: await showTables(SQL.pool, User.session.database),
+  //     user: User,
+  //   };
+  //   mainWindow.webContents.send('initialize', initialize);
+  // } else {
+  //   retryToConnect();
+  // }
 }
 
 // Update SQL object
