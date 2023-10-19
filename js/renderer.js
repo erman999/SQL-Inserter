@@ -74,14 +74,13 @@ function listFields(selectElement, data) {
   }
 
   data.fields.forEach((field, i) => {
-    console.log(field);
-
 
     let fieldDefault = '';
     if (field.Default === null) {
       fieldDefault = '';
     } else if (field.Default === 'CURRENT_TIMESTAMP') {
       let dt = new Date();
+      dt.setMinutes(((-1) * dt.getTimezoneOffset()) + dt.getMinutes());
       fieldDefault = dt.toISOString().replace('T', ' ').split('\.')[0];
     } else {
       fieldDefault = field.Default;
@@ -122,8 +121,6 @@ refresh.addEventListener('click', function() {
   };
 
   window.ipcRender.invoke('refresh', data).then((result) => {
-    console.log("data", data);
-    console.log("result", result);
     listDatabases(databases, result.databases);
     listTables(tables, result.tables);
     listFields(fieldsTable, result.fields);
@@ -215,44 +212,50 @@ function valueGenerator(type, value) {
     return 'NULL';
     break;
     case 'numeric':
-    // Detect Min/Max call
-    if (value.includes("/")) {
-      const numbers = value.split("/");
-      const min = Math.min(parseFloat(numbers[0].trim()), parseFloat(numbers[1].trim()));
-      const max = Math.max(parseFloat(numbers[0].trim()), parseFloat(numbers[1].trim()));
 
+    // Detect Min/Max call
+    if (value.includes("/") && !value.includes(",")) {
+      const numbers = value.split("/");
+      let min = Math.min(parseFloat(numbers[0].trim()), parseFloat(numbers[1].trim()));
+      let max = Math.max(parseFloat(numbers[0].trim()), parseFloat(numbers[1].trim()));
       // Check fraction
       if (String(min).includes(".") || String(max).includes(".")) {
         const minFraction = String(min).split('.')[1].length;
         const maxFraction = String(max).split('.')[1].length;
         const fractionLength = Math.max(minFraction, maxFraction);
-        const multiplier = 10 * fractionLength;
-        // parseFloat(123.1231231231231.toFixed(2))
+        const multiplier = Math.pow(10, fractionLength);
+        min *= multiplier;
+        max *= multiplier;
+        let result = Math.floor(Math.random() * (max - min + 1)) + min;
+        return (result / multiplier);
       }
-
       return Math.floor(Math.random() * (max - min + 1)) + min;
+
       // Detect array call
-    } else if (value.includes(",")) {
-      // Do
+    } else if (value.includes(",") && !value.includes("/")) {
+      const numbers = value.split(",");
+      const sanitize1 = numbers.map((n) => n.trim());
+      const sanitize2 = sanitize1.filter((n) => n !== '');
+      const result = sanitize2[Math.floor(Math.random()*sanitize2.length)];
+      return result;
     } else {
       return value;
     }
-    console.log('numeric', value);
     break;
     case 'string':
-    console.log('string', value);
+    return "'" + value + "'";
     break;
     case 'date':
-    console.log('date', value);
+    return "'" + value + "'";
     break;
     case 'spatial':
-    console.log('spatial', value);
+    return value;
     break;
     case 'json':
-    console.log('json', value);
+    return value;
     break;
     default:
-    // There is no default all cases pre-defined
+    return "'" + value + "'";
   }
 }
 
