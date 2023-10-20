@@ -93,7 +93,7 @@ async function startApp() {
   console.log("############################");
 
   // Connect to SQL server
-  let xSQL = await SQL.setOptions(User.mysql).connect();
+  let xSQL = await SQL.setOptions(User.mysql).connect({reconnect: true});
   console.log(xSQL);
 
 

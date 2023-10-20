@@ -9,8 +9,6 @@ class SQLWrapper {
     this.pool = null;
     this.alwaysAlive = true;
     this.interval = 0;
-    this.keepAliveInterval = 0;
-    this.keepAliveIntervalTime = 5000;
   }
 
 
@@ -28,7 +26,7 @@ class SQLWrapper {
   }
 
 
-  connect() {
+  connect(settings) {
     console.log('Trying to connect SQL server...');
     return new Promise(async (resolve) => {
       let result = await this.createConnectionPool(this.options);
@@ -37,6 +35,8 @@ class SQLWrapper {
       this.connectionErr = result.connectionErr;
       this.pool = result.pool;
 
+      this.reconnect(settings.reconnect ?? false);
+
       if (result.connection) {
         console.log("Connected to SQL server");
         resolve(true);
@@ -44,6 +44,7 @@ class SQLWrapper {
         console.log("Failed to connect to SQL server");
         resolve(false);
       }
+
     });
   }
 
@@ -57,9 +58,12 @@ class SQLWrapper {
   //   }
   // }
 
-  // reconnect() {
-  //   this.interval = setInterval(this.connect.bind(this), 3000);
-  // }
+  reconnect(bool) {
+    if (bool) {
+      // Burada kaldım...
+      this.interval = setInterval(this.connect.bind(this), 3000);
+    }
+  }
 
 
   async query(statement) {
@@ -114,17 +118,6 @@ class SQLWrapper {
     return this.connection;
   }
 
-
-
-
-
-
-
-  keepAlive() {
-    this.keepAliveInterval = setInterval(function() {
-      console.log("keepAlive worked.");
-    }, this.keepAliveIntervalTime);
-  }
 
 
   mycb(somefn) {
