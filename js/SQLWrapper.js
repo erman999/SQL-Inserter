@@ -7,8 +7,8 @@ class SQLWrapper {
     this.connection = false;
     this.connectionErr = '';
     this.pool = null;
-    this.alwaysAlive = true;
-    this.interval = 0;
+    this.watchInterval = null;
+    this.watchTimeInterval = 5000;
   }
 
 
@@ -35,7 +35,11 @@ class SQLWrapper {
       this.connectionErr = result.connectionErr;
       this.pool = result.pool;
 
-      this.reconnect(settings.reconnect ?? false);
+      if (typeof settings !== 'undefined') {
+        if (settings.hasOwnProperty('watchConnection')) {
+          this.watchConnection(settings.watchConnection);
+        }
+      }
 
       if (result.connection) {
         console.log("Connected to SQL server");
@@ -49,19 +53,21 @@ class SQLWrapper {
   }
 
 
-  // checkConnection() {
-  //   let result = await this.query('SELECT 1');
-  //
-  //   if (result.error) {
-  //     this.connection = false;
-  //     this.connectionErr = result.errorMsg;
-  //   }
-  // }
+  async checkConnection() {
+    let result = await this.query('SELECT 1');
+    return result;
+  }
 
-  reconnect(bool) {
+
+  watchConnection(bool) {
     if (bool) {
-      // Burada kaldım...
-      this.interval = setInterval(this.connect.bind(this), 3000);
+      this.watchInterval = setInterval(async () => {
+        const connectionResult = await this.checkConnection();
+        console.log(connectionResult);
+        if (connectionResult.error !== this.connection) {
+
+        }
+      }, this.watchTimeInterval);
     }
   }
 

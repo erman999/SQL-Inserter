@@ -90,11 +90,9 @@ async function startApp() {
   // Update User Object
   Object.assign(User, configsJson);
 
-  console.log("############################");
 
   // Connect to SQL server
-  let xSQL = await SQL.setOptions(User.mysql).connect({reconnect: true});
-  console.log(xSQL);
+  await SQL.setOptions(User.mysql).connect({watchConnection: true});
 
 
   // SQL.reconnect();
@@ -118,10 +116,6 @@ async function startApp() {
   //   console.log(qyr);
   //
   // }, 3000);
-
-
-
-  console.log("############################");
 
 
   // if (SQL.connection) {
