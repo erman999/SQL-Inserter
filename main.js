@@ -91,8 +91,12 @@ async function startApp() {
   Object.assign(User, configsJson);
 
 
+  // const SQL = new SQLWrapper({credentials: User.mysql});
+  // SQL.setOptions({credentials: User.mysql});
+
   // Connect to SQL server
-  await SQL.setOptions(User.mysql).connect({watchConnection: true});
+  console.log("HERE:", User.mysql);
+  SQL.setCredentials(User.mysql);
 
 
   // SQL.reconnect();

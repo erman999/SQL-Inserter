@@ -1,21 +1,47 @@
 const mysql = require('mysql2');
 
+class MyClass {
+  constructor(data) {
+    this.name = data?.name ?? null
+  }
+}
+
 class SQLWrapper {
 
-  constructor(options) {
-    this.options = options;
+  constructor(data) {
+    console.log(data);
+    this.credentials = data.credentials || 'test';
     this.connection = false;
     this.connectionErr = '';
     this.pool = null;
     this.watchInterval = null;
     this.watchTimeInterval = 5000;
+    console.log(this);
   }
 
 
-  createConnectionPool(options) {
+  setCredentials(credentials) {
+    this.credentials = credentials;
+    console.log(this);
+    return this;
+  }
+
+
+  connected() {
+    console.log("Connected to SQL server");
+  }
+
+
+  disconnected() {
+    console.log("Failed to connect to SQL server");
+  }
+
+
+  createConnectionPool(credentials) {
+    if (isEmpty(credentials)) return {connection: false, pool: null, error: true, response: 'Connection credentials required.'};
     return new Promise(async (resolve, reject) => {
       try {
-        const pool = mysql.createPool(options);
+        const pool = mysql.createPool(credentials);
         const promisePool = pool.promise();
         const [rows, fields] = await promisePool.query("SELECT 1 AS connected;");
         resolve({connection: true, pool: promisePool, error: false, response: rows});
@@ -26,26 +52,19 @@ class SQLWrapper {
   }
 
 
-  connect(settings) {
-    console.log('Trying to connect SQL server...');
+  connect() {
     return new Promise(async (resolve) => {
-      let result = await this.createConnectionPool(this.options);
+      let result = await this.createConnectionPool(this.credentials);
 
       this.connection = result.connection;
       this.connectionErr = result.connectionErr;
       this.pool = result.pool;
 
-      if (typeof settings !== 'undefined') {
-        if (settings.hasOwnProperty('watchConnection')) {
-          this.watchConnection(settings.watchConnection);
-        }
-      }
-
       if (result.connection) {
-        console.log("Connected to SQL server");
+        this.connected();
         resolve(true);
       } else {
-        console.log("Failed to connect to SQL server");
+        this.disconnected();
         resolve(false);
       }
 
@@ -114,10 +133,17 @@ class SQLWrapper {
   }
 
 
-  setOptions(options) {
-    this.options = options;
-    return this;
+  isEmpty(obj) {
+    for (const prop in obj) {
+      if (Object.hasOwn(obj, prop)) {
+        return false;
+      }
+    }
+
+    return true;
   }
+
+
 
 
   isConnected() {
