@@ -62,6 +62,7 @@ const SQLWrapper = require('./js/SQLWrapper.js');
 
 const fsw = new FSWrapper();
 const SQL = new SQLWrapper();
+// console.log(SQL);
 
 const User = {
   mysql: {
@@ -91,13 +92,16 @@ async function startApp() {
   Object.assign(User, configsJson);
 
 
-  // const SQL = new SQLWrapper({credentials: User.mysql});
-  // SQL.setOptions({credentials: User.mysql});
-
   // Connect to SQL server
-  console.log("HERE:", User.mysql);
   SQL.setCredentials(User.mysql);
 
+  SQL.addEventListener('connection', sqlConnected);
+  SQL.addEventListener('disconnection2', sqlConnected);
+
+  SQL.connect();
+
+
+  console.log(SQL);
 
   // SQL.reconnect();
 
@@ -132,6 +136,16 @@ async function startApp() {
   // } else {
   //   retryToConnect();
   // }
+}
+
+function sqlConnected(result) {
+  console.log("This worked", result);
+  mainWindow.webContents.send('update-status', result.connection);
+}
+
+function sqlDisconnected(result) {
+  console.log("This worked", result);
+  mainWindow.webContents.send('update-status', result.connection);
 }
 
 // Update SQL object

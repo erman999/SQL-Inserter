@@ -1,54 +1,52 @@
 const mysql = require('mysql2');
 
-class MyClass {
-  constructor(data) {
-    this.name = data?.name ?? null
-  }
-}
-
 class SQLWrapper {
 
   constructor(data) {
-    console.log(data);
-    this.credentials = data.credentials || 'test';
+    this.credentials = data?.credentials ?? null;
     this.connection = false;
     this.connectionErr = '';
     this.pool = null;
     this.watchInterval = null;
     this.watchTimeInterval = 5000;
-    console.log(this);
-  }
-
-
-  setCredentials(credentials) {
-    this.credentials = credentials;
-    console.log(this);
-    return this;
-  }
-
-
-  connected() {
-    console.log("Connected to SQL server");
-  }
-
-
-  disconnected() {
-    console.log("Failed to connect to SQL server");
+    this.testCB = null;
+    this.connectionCallback = null;
+    this.disconnectionCallback = null;
   }
 
 
   createConnectionPool(credentials) {
-    if (isEmpty(credentials)) return {connection: false, pool: null, error: true, response: 'Connection credentials required.'};
+    if (typeof credentials === 'undefined') return {connection: false, pool: null, error: true, response: 'Connection credentials required.'};
     return new Promise(async (resolve, reject) => {
       try {
         const pool = mysql.createPool(credentials);
         const promisePool = pool.promise();
-        const [rows, fields] = await promisePool.query("SELECT 1 AS connected;");
+        const [rows, fields] = await promisePool.query("SELECT 1 AS connected");
         resolve({connection: true, pool: promisePool, error: false, response: rows});
       } catch (err) {
         resolve({connection: false, pool: null, error: true, response: err.code});
       }
     });
+  }
+
+
+  setCredentials(credentials) {
+    this.credentials = credentials ?? null;
+    return this;
+  }
+
+
+  addEventListener(evt, callback) {
+    switch (evt) {
+      case 'connection':
+      this.connectionCallback = callback;
+      break;
+      case 'disconnection':
+      this.disconnectionCallback = callback;
+      break;
+      default:
+      console.log(`Could not find event listener named ${evt}.`);
+    }
   }
 
 
@@ -60,15 +58,29 @@ class SQLWrapper {
       this.connectionErr = result.connectionErr;
       this.pool = result.pool;
 
+      this.connectionCallback(result);
+
       if (result.connection) {
-        this.connected();
-        resolve(true);
+        this.connected(result);
+        resolve(result);
       } else {
-        this.disconnected();
-        resolve(false);
+        this.disconnected(result);
+        resolve(result);
       }
 
     });
+  }
+
+
+  connected(data) {
+    console.log("connected", data);
+    console.log("SQLWrapper: Connection successful");
+  }
+
+
+  disconnected(data) {
+    console.log("disconnected", data);
+    console.log("SQLWrapper: Connection failed");
   }
 
 
@@ -104,7 +116,7 @@ class SQLWrapper {
 
   async showDatabases() {
     if (!this.isConnected()) return {response: [], error: true, errorMsg: 'Connection error'};
-    let result = await this.query('SHOW DATABASES;');
+    let result = await this.query('SHOW DATABASES');
     let databases = [];
     result.response.forEach((db, i) => {
       databases.push(Object.values(db)[0]);
@@ -117,7 +129,7 @@ class SQLWrapper {
 
   async showTables(databaseName) {
     if (!this.isConnected()) return {response: [], error: true, errorMsg: 'Connection error'};
-    let result = await this.query(`SHOW TABLES FROM ${databaseName};`);
+    let result = await this.query(`SHOW TABLES FROM ${databaseName}`);
     let tables = [];
     result.response.forEach((db, i) => {
       tables.push(Object.values(db)[0]);
@@ -128,7 +140,7 @@ class SQLWrapper {
 
   async showFields(databaseName, tableName) {
     if (!this.isConnected()) return {response: [], error: true, errorMsg: 'Connection error'};
-    let result = await this.query(`SHOW FIELDS FROM \`${databaseName}\`.\`${tableName}\`;`);
+    let result = await this.query(`SHOW FIELDS FROM \`${databaseName}\`.\`${tableName}\``);
     return result;
   }
 
